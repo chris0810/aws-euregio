@@ -15,7 +15,8 @@ let map = L.map("map", {
 
 // thematische Layer
 let themaLayer = {
-    stations: L.featureGroup()
+    stations: L.featureGroup(),
+    temperature:L.featureGroup()
 }
 
 // Hintergrundlayer
@@ -29,7 +30,8 @@ let layerControl = L.control.layers({
     "Esri WorldTopoMap": L.tileLayer.provider("Esri.WorldTopoMap"),
     "Esri WorldImagery": L.tileLayer.provider("Esri.WorldImagery")
 }, {
-    "Wetterstationen": themaLayer.stations.addTo(map)
+    "Wetterstationen": themaLayer.stations.addTo(map),
+    "Temperatur": themaLayer.temperature.addTo(map),
 }).addTo(map);
 
 // Maßstab
@@ -37,11 +39,9 @@ L.control.scale({
     imperial: false,
 }).addTo(map);
 
-// Weatherstations
-async function showStations(url) {
-    let response = await fetch(url);
-    let jsondata = await response.json();
-    console.log(jsondata.features);
+function writeStationLayer(jsondata){
+
+    
     L.geoJSON(jsondata, {
         pointToLayer: function (feature, latlng) {
             return L.marker(latlng, {
@@ -55,13 +55,31 @@ async function showStations(url) {
         },
 
         onEachFeature: function (feature, layer) {
+        
+            let pointInTime= new Date(feature.properties.date);
+            //console.log(pointInTime);
+
+            
             layer.bindPopup(`<h3>${feature.properties.name}, ${feature.geometry.coordinates[2]} m ü.A. </h3><br> 
                             <b>Lufttemperatur: </b> ${feature.properties.LT ? feature.properties.LT + " °C" : "keine verfügbaren Messdaten"} <br>
                             <b>Relative Luftfeuchte: </b>${feature.properties.RH ? feature.properties.RH + " %" : "keine verfügbaren Messdaten"} <br>
                             <b>Windgeschwindigkeit:</b> ${feature.properties.WG ? feature.properties.WG + " km/h" : "keine verfügbaren Messdaten"} <br>
-                            <b>Schneehöhe: </b>${feature.properties.HS ? feature.properties.HS + " cm" : "keine verfügbaren Messdaten"}`);
-        }
+                            <b>Schneehöhe: </b>${feature.properties.HS ? feature.properties.HS + " cm" : "keine verfügbaren Messdaten"}
+                            <span>${pointInTime.toLocateString}</span>`
+                            );
+                            
+                        }
+        
     }).addTo(themaLayer.stations);
+   
 
 }
-showStations("https://static.avalanche.report/weather_stations/stations.geojson");
+     // Weatherstations
+     async function loadStations(url) {
+        let response = await fetch(url);
+        let jsondata = await response.json();
+        //console.log(jsondata.features);
+        writeStationLayer(jsondata);
+
+     }       
+loadStations("https://static.avalanche.report/weather_stations/stations.geojson");
