@@ -3,67 +3,105 @@ const COLORS= {
         {
             min:-50,
             max:-25,
-            colour: "#9f80ff"
+            color: "#9f80ff"
         },
         {
             min:-25,
             max:-20,
-            colour: "#784cff"
+            color: "#784cff"
         },
         {
             min:-20,
             max:-15,
-            colour: "#f5abe"
+            color: "#f5abe"
         },
         {
             min:-15,
             max:-10,
-            colour: "1380ff"
+            color: "1380ff"
         },
         {
             min:-10,
             max:-5,
-            colour: "#19cdff"
+            color: "#19cdff"
         },
         {
             min:-5,
             max:0,
-            colour: "#8fffff"
+            color: "#8fffff"
         },
         {
             min:0,
             max:5,
-            colour: "#b0ffbc"
+            color: "#b0ffbc"
         },
         {
             min:5,
             max:10,
-            colour: "#ffff73"
+            color: "#ffff73"
         },
         {
             min:10,
             max:15,
-            colour: "#ffbe7d"
+            color: "#ffbe7d"
         },
         {
             min:15,
             max:20,
-            colour: "#ff9b41"
+            color: "#ff9b41"
         },
         {
             min:20,
             max:25,
-            colour: "#ff5a41"
+            color: "#ff5a41"
         },
         {
             min:25,
             max:30,
-            colour: "#ff1e23"
+            color: "#ff1e23"
         },
         {
             min:30,
             max:50,
-            colour: "#fa3c96"
+            color: "#fa3c96"
+        },
+
+    ],
+    wind:[
+        {
+            min:0,
+            max:5,
+            color: "#ffff64"
+        },
+        {
+            min:5,
+            max:10,
+            color: "#c8ff64"
+        },
+        {
+            min:10,
+            max:20,
+            color: "#96ff96"
+        },
+        {
+            min:20,
+            max:40,
+            color: "#32c8ff"
+        },
+        {
+            min:40,
+            max:60,
+            color: "#6496ff"
+        },
+        {
+            min:60,
+            max:80,
+            color: "#9664ff"
+        },
+        {
+            min:80,
+            max:150,
+            color: "#ff3232"
         },
 
     ]
