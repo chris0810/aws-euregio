@@ -30,14 +30,28 @@ let layerControl = L.control.layers({
     "Esri WorldTopoMap": L.tileLayer.provider("Esri.WorldTopoMap"),
     "Esri WorldImagery": L.tileLayer.provider("Esri.WorldImagery")
 }, {
-    "Wetterstationen": themaLayer.stations.addTo(map),
+    "Wetterstationen": themaLayer.stations,
     "Temperatur": themaLayer.temperature.addTo(map),
 }).addTo(map);
 
+layerControl.expand()
 // Maßstab
 L.control.scale({
     imperial: false,
 }).addTo(map);
+
+function getColor(value, ramp){
+for(let rule of ramp) {
+    if(value >= rule.min && value < rule.max){
+        return rule.color;
+    }
+}
+
+}
+console.log(getColor(-40, COLORS.temperature));
+
+//
+
 
 function writeStationLayer(jsondata){
 
@@ -63,9 +77,9 @@ function writeStationLayer(jsondata){
             layer.bindPopup(`<h3>${feature.properties.name}, ${feature.geometry.coordinates[2]} m ü.A. </h3><br> 
                             <b>Lufttemperatur: </b> ${feature.properties.LT ? feature.properties.LT + " °C" : "keine verfügbaren Messdaten"} <br>
                             <b>Relative Luftfeuchte: </b>${feature.properties.RH ? feature.properties.RH + " %" : "keine verfügbaren Messdaten"} <br>
-                            <b>Windgeschwindigkeit:</b> ${feature.properties.WG ? feature.properties.WG + " km/h" : "keine verfügbaren Messdaten"} <br>
+                            <b>Windgeschwindigkeit:</b> ${feature.properties.WG ? (feature.properties.WG*3.6).toFixed(1) + " km/h" : "keine verfügbaren Messdaten"} <br>
                             <b>Schneehöhe: </b>${feature.properties.HS ? feature.properties.HS + " cm" : "keine verfügbaren Messdaten"}
-                            <span>${pointInTime.toLocateString}</span>`
+                            <span>Datum, Uhrzeit${pointInTime.toLocateString()}</span>`
                             );
                             
                         }
@@ -73,13 +87,32 @@ function writeStationLayer(jsondata){
     }).addTo(themaLayer.stations);
    
 
-}
+
+function writeTemperatureLayer(jsondata){
+    L.geoJSON(jsondata, {
+        filter: function(feature){
+            if(feature.properites.LT > -50 && feature.properites.LT <50){
+               return true; 
+            }
+        },
+    pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+            icon: L.divIcon({
+                className: "aws-div-icon",
+                html: `<span>${feature.properties.LT.toFixed}</span>`
+            })
+            });
+        },
+    }).addTo(themaLayer.temperature);
+} 
+
      // Weatherstations
      async function loadStations(url) {
         let response = await fetch(url);
         let jsondata = await response.json();
         //console.log(jsondata.features);
         writeStationLayer(jsondata);
+        writeTemperatureLayer(jsondata);
 
      }       
-loadStations("https://static.avalanche.report/weather_stations/stations.geojson");
+loadStations("https://static.avalanche.report/weather_stations/stations.geojson")}
