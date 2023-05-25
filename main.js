@@ -17,6 +17,7 @@ let themaLayer = {
     stations: L.featureGroup(),
     temperature: L.featureGroup(),
     wind: L.featureGroup(),
+    snow: L.featureGroup(),
 }
 
 // Hintergrundlayer
@@ -59,7 +60,7 @@ function writeStationLayer(jsondata){
         pointToLayer: function(feature, latlng) {
              return L.marker(latlng, {
                  icon: L.icon({
-                     iconUrl: "icons/wifi.png",
+                     iconUrl: "icons/icons.png",
                      iconAnchor: [16, 37],
                      popupAnchor: [0, -37],
                  })
@@ -149,7 +150,6 @@ function writeSnowLayer(jsondata){
 
     }).addTo(themaLayer.snow);
 }
-
 // Vienna Sightseeing Haltestellen
 async function loadStations(url) {
     let response = await fetch(url);
@@ -170,5 +170,5 @@ L.control.rainviewer({
     opacitySliderLabelText: "Opacity:",
     animationInterval: 500,
     opacity: 0.5
-}).addTo(map);    
+}).addTo(map);
 loadStations("https://static.avalanche.report/weather_stations/stations.geojson");
