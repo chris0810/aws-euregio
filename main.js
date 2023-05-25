@@ -32,6 +32,7 @@ let layerControl = L.control.layers({
     "Wetterstationen": themaLayer.stations,//.addTo(map),
     "Temperatur": themaLayer.temperature.addTo(map),
     "Wind": themaLayer.wind.addTo(map),
+    "Schnee": themaLayer.snow.addTo(map),
 }).addTo(map);
 layerControl.expand();
 
@@ -128,6 +129,27 @@ function writeWindLayer(jsondata){
 
 
 }
+
+function writeSnowLayer(jsondata){
+    L.geoJSON(jsondata, {
+        filter: function(feature){
+            if (feature.properties.HS > 0 && feature.properties.HS < 999){
+                return true;
+            }
+        },
+        pointToLayer: function(feature, latlng) {
+            let color = getColor((feature.properties.HS), COLORS.snow);
+            return L.marker(latlng, {
+                icon: L.divIcon({
+                    className: "aws-div-icon",
+                    html: `<span style="background-color: ${color}">${(feature.properties.HS).toFixed(1)}</span>`
+                })
+            });
+        },
+
+    }).addTo(themaLayer.snow);
+}
+
 // Vienna Sightseeing Haltestellen
 async function loadStations(url) {
     let response = await fetch(url);
@@ -135,6 +157,18 @@ async function loadStations(url) {
     writeStationLayer(jsondata);
     writeTemperatureLayer(jsondata);
     writeWindLayer(jsondata);
+    writeSnowLayer(jsondata);
 
 }
+
+L.control.rainviewer({ 
+    position: 'bottomleft',
+    nextButtonText: '>',
+    playStopButtonText: 'Play/Stop',
+    prevButtonText: '<',
+    positionSliderLabelText: "Hour:",
+    opacitySliderLabelText: "Opacity:",
+    animationInterval: 500,
+    opacity: 0.5
+}).addTo(map);    
 loadStations("https://static.avalanche.report/weather_stations/stations.geojson");
